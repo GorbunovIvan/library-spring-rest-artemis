@@ -8,13 +8,12 @@ import lombok.*;
 @Table(name = "authors")
 @NoArgsConstructor @AllArgsConstructor
 @Getter @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(of = "person")
 @ToString
-public class Author {
+public class Author implements IsPerson {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Exclude
     private Long id;
 
     @OneToOne(cascade = { CascadeType.MERGE, CascadeType.REFRESH })
@@ -22,7 +21,15 @@ public class Author {
     @NotNull
     private Person person;
 
+    public Person getOrCreatePerson() {
+        return person != null ? person : new Person();
+    }
+
     public String getName() {
-        return getPerson().getName();
+        return getOrCreatePerson().getName();
+    }
+
+    public void setName(String name) {
+        getOrCreatePerson().setName(name);
     }
 }

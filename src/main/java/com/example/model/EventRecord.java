@@ -24,8 +24,11 @@ public class EventRecord {
     @NotEmpty
     private String queueName;
 
-    @Column(name = "date_time")
-    private LocalDateTime dateTime;
+    @Column(name = "sent_time")
+    private LocalDateTime sentTime;
+
+    @Column(name = "received_time")
+    private LocalDateTime receivedTime;
 
     @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.REFRESH })
     @JoinColumn(name = "book_id")

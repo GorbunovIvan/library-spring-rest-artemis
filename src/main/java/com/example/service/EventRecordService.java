@@ -24,10 +24,10 @@ public class EventRecordService {
     }
 
     public Set<EventRecord> getAllByDateTimeBetween(LocalDateTime timeFrom, LocalDateTime timeTo) {
-        return eventRecordRepository.findAllByDateTimeBetween(timeFrom, timeTo);
+        return eventRecordRepository.findAllBySentTimeBetween(timeFrom, timeTo);
     }
 
     public EventRecord create(EventRecord eventRecord) {
-        return eventRecordRepository.save(eventRecord);
+        return eventRecordRepository.merge(eventRecord);
     }
 }

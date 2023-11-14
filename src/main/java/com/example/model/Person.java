@@ -9,7 +9,7 @@ import lombok.*;
 @Table(name = "people")
 @NoArgsConstructor @AllArgsConstructor
 @Getter @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(of = "name")
 public class Person {
 
     @Id
