@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -30,12 +31,16 @@ public class EventRecordService {
                 .orElse(null);
     }
 
+    public Set<EventRecord> getAll() {
+        return new HashSet<>(eventRecordRepository.findAll());
+    }
+
     public Set<EventRecord> getAllByQueue(String queueName) {
         return eventRecordRepository.findAllByQueueName(queueName);
     }
 
     public Set<EventRecord> getAllByDateTimeBetween(LocalDateTime timeFrom, LocalDateTime timeTo) {
-        return eventRecordRepository.findAllBySentTimeBetween(timeFrom, timeTo);
+        return eventRecordRepository.findAllBySentTimeBetweenOrderBySentTime(timeFrom, timeTo);
     }
 
     public EventRecord create(EventRecord eventRecord) {

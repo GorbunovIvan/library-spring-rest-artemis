@@ -1,5 +1,7 @@
 package com.example.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -19,8 +21,10 @@ public class Reader implements IsPerson {
     @OneToOne(cascade = { CascadeType.MERGE, CascadeType.REFRESH })
     @JoinColumn(name = "person_id", unique = true)
     @NotNull
+    @JsonIgnoreProperties({"author"})
     private Person person;
 
+    @JsonIgnore
     public Person getOrCreatePerson() {
         return person != null ? person : new Person();
     }

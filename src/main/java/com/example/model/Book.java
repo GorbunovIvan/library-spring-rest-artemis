@@ -1,10 +1,13 @@
 package com.example.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -41,6 +44,7 @@ public class Book {
     )
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @Fetch(FetchMode.JOIN)
     private Set<Author> authors = new HashSet<>();
 
     @ManyToMany(targetEntity = Reader.class, cascade = { CascadeType.MERGE, CascadeType.REFRESH })
@@ -52,11 +56,13 @@ public class Book {
     )
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @Fetch(FetchMode.JOIN)
     private Set<Reader> readers = new HashSet<>();
 
     @OneToMany(mappedBy = "book")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
+    @JsonIgnore
     private Set<EventRecord> eventRecords = new HashSet<>();
 
     @EqualsAndHashCode.Include
@@ -64,6 +70,15 @@ public class Book {
     public String getAuthorsAsString() {
         return getAuthors().stream()
                 .map(Author::getName)
+                .collect(Collectors.joining(", "));
+    }
+
+    @EqualsAndHashCode.Include
+    @ToString.Include
+    @JsonIgnore
+    public String getReadersAsString() {
+        return getReaders().stream()
+                .map(Reader::getName)
                 .collect(Collectors.joining(", "));
     }
 }

@@ -1,5 +1,6 @@
 package com.example.repository;
 
+import com.example.exception.EntityNotFoundException;
 import com.example.model.Book;
 import com.example.model.IsPerson;
 import com.example.model.Person;
@@ -34,6 +35,15 @@ public class BookRepositoryCustomImpl implements BookRepositoryCustom {
         mergeCollectionWithPersons(book::getAuthors, book::setAuthors, personRepository::findAuthorByPerson);
         mergeCollectionWithPersons(book::getReaders, book::setReaders, personRepository::findReaderByPerson);
 
+        if (book.getId() != null) {
+            var bookInDB = entityManager.find(Book.class, book.getId());
+            if (bookInDB == null) {
+                log.error("Book with id={} does not exist", book.getId());
+                throw new EntityNotFoundException(Book.class, "id", String.valueOf(book.getId()));
+            }
+            return entityManager.merge(book);
+        }
+
         var bookInDB = entityManager.createQuery("FROM Book " +
                         "WHERE title = :title " +
                         "AND year = :year", Book.class)
@@ -45,8 +55,15 @@ public class BookRepositoryCustomImpl implements BookRepositoryCustom {
                 .orElse(null);
 
         if (bookInDB != null) {
-            log.warn("Book already exists");
-            return bookInDB;
+
+            if (bookInDB.getReadersAsString().equals(book.getReadersAsString())) {
+                log.warn("Book (id={}) already exists", bookInDB.getId());
+                return bookInDB;
+            }
+
+            log.info("Book (id={}) already exists, updating it", bookInDB.getId());
+            bookInDB.setReaders(book.getReaders());
+            return entityManager.merge(bookInDB);
         }
 
         return entityManager.merge(book);

@@ -1,6 +1,6 @@
 package com.example.service;
 
-import com.example.exceptions.EntityNotFoundException;
+import com.example.exception.EntityNotFoundException;
 import com.example.model.Author;
 import com.example.model.Book;
 import com.example.model.Person;
@@ -50,16 +50,12 @@ public class BookService {
         return bookRepository.findAllByReadersIn(authorsAsReaders);
     }
 
-    public Book create(Book book) {
-        return bookRepository.save(book);
-    }
-
     @Transactional
     public Book update(Long id, Book book) {
         if (!bookRepository.existsById(id)) {
             throw new EntityNotFoundException(Book.class, "id", String.valueOf(id));
         }
         book.setId(id);
-        return bookRepository.save(book);
+        return bookRepository.merge(book);
     }
 }

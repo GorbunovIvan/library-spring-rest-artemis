@@ -4,6 +4,7 @@ import com.example.model.EventRecord;
 import com.example.service.EventRecordService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,12 @@ public class EventRecordController {
 
     private final JmsTemplate jmsTemplate;
 
+    @GetMapping
+    public ResponseEntity<Set<EventRecord>> getAll() {
+        var eventRecords = eventRecordService.getAll();
+        return ResponseEntity.ok(eventRecords);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<EventRecord> getById(@PathVariable Long id) {
         var eventRecord = eventRecordService.getById(id);
@@ -37,12 +44,39 @@ public class EventRecordController {
     }
 
     @GetMapping("/time")
-    public ResponseEntity<Set<EventRecord>> getAllByDateTimeBetween(@RequestParam("timeFrom") LocalDateTime timeFrom,
-                                                                    @RequestParam("timeTo") LocalDateTime timeTo) {
+    // URI must be like - /time?timeFrom=2023-11-15T00:00:00&timeTo=2023-11-15T12:30:00
+    public ResponseEntity<Set<EventRecord>> getAllByDateTimeBetween(@RequestParam("timeFrom") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime timeFrom,
+                                                                    @RequestParam("timeTo") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime timeTo) {
         var events = eventRecordService.getAllByDateTimeBetween(timeFrom, timeTo);
         return ResponseEntity.ok(events);
     }
 
+    /**
+     * Request body should look like this:
+     * {
+     *   "title": "book 1",
+     *   "year": 2001,
+     *   "authors": [
+     *     {
+     *       "person": {
+     *         "name": "Bob"
+     *       }
+     *     },
+     *     {
+     *       "person": {
+     *         "name": "Maria"
+     *       }
+     *     }
+     *   ],
+     *   "readers": [
+     *     {
+     *       "person": {
+     *         "name": "John"
+     *       }
+     *     }
+     *   ]
+     * }
+     */
     @PostMapping("/{queue}")
     public ResponseEntity<?> addEventToQueue(@PathVariable String queue,
                                                 @RequestBody String message) {

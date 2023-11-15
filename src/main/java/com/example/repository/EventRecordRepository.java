@@ -10,5 +10,5 @@ public interface EventRecordRepository extends JpaRepository<EventRecord, Long>,
 
     Set<EventRecord> findAllByQueueName(String queueName);
 
-    Set<EventRecord> findAllBySentTimeBetween(LocalDateTime timeFrom, LocalDateTime timeTo);
+    Set<EventRecord> findAllBySentTimeBetweenOrderBySentTime(LocalDateTime timeFrom, LocalDateTime timeTo);
 }

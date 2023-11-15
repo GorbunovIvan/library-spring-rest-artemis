@@ -1,5 +1,6 @@
 package com.example.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -22,9 +23,11 @@ public class Person {
     private String name;
 
     @OneToOne(mappedBy = "person")
+    @JsonIgnoreProperties({"person"})
     private Author author;
 
     @OneToOne(mappedBy = "person")
+    @JsonIgnoreProperties({"person"})
     private Reader reader;
 
     @Override
