@@ -71,7 +71,9 @@ public class EventRecordService {
 
         eventRecord.setBook(book);
 
-        create(eventRecord);
+        eventRecord = create(eventRecord);
+
+        log.info("Event-record with id={} was handled", eventRecord.getId());
     }
 
     private String getQueueNameFromJMSMessageHeaders(MessageHeaders headers) {

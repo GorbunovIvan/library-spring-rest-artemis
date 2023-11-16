@@ -32,19 +32,24 @@ public class BookRepositoryCustomImpl implements BookRepositoryCustom {
     @Transactional
     public Book merge(Book book) {
 
-        mergeCollectionWithPersons(book::getAuthors, book::setAuthors, personRepository::findAuthorByPerson);
-        mergeCollectionWithPersons(book::getReaders, book::setReaders, personRepository::findReaderByPerson);
+        Book bookInDB;
 
         if (book.getId() != null) {
-            var bookInDB = entityManager.find(Book.class, book.getId());
+            bookInDB = entityManager.find(Book.class, book.getId());
             if (bookInDB == null) {
                 log.error("Book with id={} does not exist", book.getId());
                 throw new EntityNotFoundException(Book.class, "id", String.valueOf(book.getId()));
             }
+        }
+
+        mergeCollectionWithPersons(book::getAuthors, book::setAuthors, personRepository::findAuthorByPerson);
+        mergeCollectionWithPersons(book::getReaders, book::setReaders, personRepository::findReaderByPerson);
+
+        if (book.getId() != null) {
             return entityManager.merge(book);
         }
 
-        var bookInDB = entityManager.createQuery("FROM Book " +
+        bookInDB = entityManager.createQuery("FROM Book " +
                         "WHERE title = :title " +
                         "AND year = :year", Book.class)
                 .setParameter("title", book.getTitle())

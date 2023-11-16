@@ -27,7 +27,7 @@ public class Person {
     private Author author;
 
     @OneToOne(mappedBy = "person")
-    @JsonIgnoreProperties({"person"})
+    @JsonIgnoreProperties(value = {"person"}, allowSetters = true)
     private Reader reader;
 
     @Override

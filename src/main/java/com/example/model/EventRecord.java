@@ -17,6 +17,7 @@ public class EventRecord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Exclude
     private Long id;
 
     @Column(name = "queue_name")
@@ -36,4 +37,12 @@ public class EventRecord {
 
     @Column(name = "message", length = 9_999)
     private String message;
+
+    public EventRecord(EventRecord eventRecordCopy) {
+        setQueueName(eventRecordCopy.getQueueName());
+        setSentTime(eventRecordCopy.getSentTime());
+        setReceivedTime(eventRecordCopy.getReceivedTime());
+        setBook(eventRecordCopy.getBook());
+        setMessage(eventRecordCopy.getMessage());
+    }
 }

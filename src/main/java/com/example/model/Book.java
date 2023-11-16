@@ -31,7 +31,7 @@ public class Book {
     @NotEmpty
     private String title;
 
-    @Column(name = "year")
+    @Column(name = "publication_year")
     @Digits(integer = 4, fraction = 0)
     private Integer year;
 
@@ -64,6 +64,14 @@ public class Book {
     @ToString.Exclude
     @JsonIgnore
     private Set<EventRecord> eventRecords = new HashSet<>();
+
+    public Book(Book bookCopy) {
+        setTitle(bookCopy.getTitle());
+        setYear(bookCopy.getYear());
+        setAuthors(new HashSet<>(bookCopy.getAuthors()));
+        setReaders(new HashSet<>(bookCopy.getReaders()));
+        setEventRecords(new HashSet<>(bookCopy.getEventRecords()));
+    }
 
     @EqualsAndHashCode.Include
     @ToString.Include

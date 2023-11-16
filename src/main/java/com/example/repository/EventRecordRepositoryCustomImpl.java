@@ -20,6 +20,10 @@ public class EventRecordRepositoryCustomImpl implements EventRecordRepositoryCus
     @Transactional
     public EventRecord merge(EventRecord eventRecord) {
 
+        if (eventRecord.getId() != null) {
+            throw new RuntimeException("ID of the event record should not be specified");
+        }
+
         var book = eventRecord.getBook();
         book = bookRepository.merge(book);
 

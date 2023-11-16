@@ -21,7 +21,7 @@ public class Author implements IsPerson {
     @OneToOne(cascade = { CascadeType.MERGE, CascadeType.REFRESH })
     @JoinColumn(name = "person_id", unique = true)
     @NotNull
-    @JsonIgnoreProperties({"author"})
+    @JsonIgnoreProperties(value = {"author"}, allowSetters = true)
     private Person person;
 
     @JsonIgnore
