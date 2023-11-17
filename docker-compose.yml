@@ -1,0 +1,55 @@
+version: "3.8"
+
+services:
+
+  #  Artemis (ActiveMQ)
+  artemis:
+    image: vromero/activemq-artemis:latest
+#    image: apache/activemq-artemis
+    ports:
+      - "8162:8161"  # Web Console
+      - "61617:61616"  # AMQP
+      - "6445:5445"  # MQTT
+    environment:
+      - ARTEMIS_USERNAME=admin
+      - ARTEMIS_PASSWORD=admin
+      - ARTEMIS_HOST=artemis
+      - ARTEMIS_PORT=61616
+
+  #  PostgreSQL service
+  postgres-db:
+    image: postgres
+    ports:
+      - "6432:5432"
+    environment:
+      POSTGRES_PASSWORD: root
+      POSTGRES_USER: postgres
+      POSTGRES_DB: library-spring-rest-artemis
+
+  library-spring-rest-artemis:
+    depends_on:
+      - artemis
+      - postgres-db
+    image: library-spring-rest-artemis-image
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_APPLICATION_JSON: '{
+          "spring.datasource.url" : "jdbc:postgresql://postgres-db:5432/library-spring-rest-artemis",
+          "spring.datasource.username" : "postgres",
+          "spring.datasource.password" : "root",
+          
+          "spring.datasource.initialization-mode" : "always",
+          "spring.datasource.continue-on-error" : "true",
+          "spring.datasource.max-wait" : "30000",
+          
+          "spring.jpa.open-in-view" : "false",
+          "spring.jpa.show-sql" : "true",
+          "spring.jpa.hibernate.ddl-auto" : "update",
+
+          "spring.artemis.enabled" : "true",
+          "spring.artemis.mode" : "native",
+          "spring.artemis.broker-url" : "tcp://artemis:61616",
+          "spring.artemis.user" : "admin",
+          "spring.artemis.password" : "admin"
+      }'
